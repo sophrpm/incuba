@@ -1,0 +1,30 @@
+digraph G {
+node [shape=plaintext];
+disk [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='4'><b>DISCO - 12582912 bytes</b></td></tr>
+<tr>
+<td width='70'><b>MBR</b><br/>0.00%</td>
+<td width='500'><b>PRIMARIA</b><br/>primaria<br/>6291456 bytes<br/>50.00%</td>
+<td width='250'><table border='0' cellborder='1' cellspacing='0'>
+<tr><td><b>EXTENDIDA extendida</b><br/>25.00% del disco</td></tr>
+<tr><td>
+<table border='0' cellborder='1' cellspacing='0'><tr>
+<td><b>EBR</b><br/>0.00% ext.</td>
+<td><b>LOGICA</b><br/>logica<br/>3.26% ext.</td>
+<td>Libre<br/>96.74% ext.</td>
+</tr></table>
+</td></tr>
+</table>
+</td>
+<td width='250'><b>LIBRE</b><br/>3145560 bytes<br/>25.00%</td>
+</tr>
+<tr>
+<td>Inicio: 0<br/>Fin: 168</td>
+<td>Inicio: 168<br/>Fin: 6291624</td>
+<td>Inicio: 6291624<br/>Fin: 9437352</td>
+<td>Inicio: 9437352<br/>Fin: 12582912</td>
+</tr>
+</table>
+>];
+}

@@ -1,0 +1,13 @@
+# preparar el contenido real con python3 tests/prepare_scripts.py
+mkdir -path=/docs/proyecto -p
+mkfile -path=/docs/vacio
+mkfile -path=/docs/numeros -size=25
+mkfile -path=/docs/real -size=999 -cont="/tmp/mia-p1-demo/contenido real.txt"
+mkfile -path=/padres/hijos/a -r -size=20
+cat -file2=/docs/real -file1=/docs/numeros -file3=/docs/vacio
+
+# este comando pausa el script; responder y o n en el campo de confirmacion
+mkfile -path=/docs/numeros -size=10
+cat -file1=/docs/numeros
+rep -name=file -id=471A -path_file_ls=/docs/real -path=/tmp/mia-p1-demo/reportes/file.txt
+rep -name=ls -id=471A -path_file_ls=/docs -path=/tmp/mia-p1-demo/reportes/ls.svg

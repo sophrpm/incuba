@@ -1,0 +1,11 @@
+# cada archivo fuerza un nivel distinto
+mkfile -path=/directo -size=768
+mkfile -path=/simple -size=769
+mkfile -path=/doble -size=1793
+mkfile -path=/triple -size=20000
+cat -file1=/directo -file2=/simple -file3=/doble -file4=/triple
+rep -name=inode -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_inode.svg
+rep -name=block -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_block.svg
+rep -name=tree -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_tree.svg
+rep -name=bm_inode -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_bm_inode.txt
+rep -name=bm_block -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_bm_block.txt

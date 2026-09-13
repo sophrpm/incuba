@@ -1,0 +1,21 @@
+logout
+login -user=Ana -pass=Clave -id=471A
+mkdir -path=/equipo
+mkfile -path=/equipo/ana -size=20
+cat -file1=/equipo/ana
+logout
+login -user=Beto -pass=123 -id=471A
+# mismo grupo: escritura permitida
+mkfile -path=/equipo/beto -size=10
+cat -file1=/equipo/ana
+logout
+login -user=Caro -pass=123 -id=471A
+# otros: lectura permitida por 664, escritura denegada
+cat -file1=/equipo/ana
+mkfile -path=/equipo/caro -size=10
+mkdir -path=/equipo/no
+mkgrp -name=no
+logout
+login -user=root -pass=123 -id=471A
+# root puede escribir siempre
+mkfile -path=/equipo/root -size=10

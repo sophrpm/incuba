@@ -1,0 +1,9 @@
+# continuar despues de 01_discos.smia
+mkfs -id=471A
+login -user=root -pass=123 -id=471A
+cat -file1=/users.txt
+rep -name=sb -id=471A -path=/tmp/mia-p1-demo/reportes/sb.svg
+rep -name=inode -id=471A -path=/tmp/mia-p1-demo/reportes/inode.svg
+rep -name=block -id=471A -path=/tmp/mia-p1-demo/reportes/block.svg
+rep -name=bm_inode -id=471A -path=/tmp/mia-p1-demo/reportes/bm_inode.txt
+rep -name=bm_block -id=471A -path=/tmp/mia-p1-demo/reportes/bm_block.txt

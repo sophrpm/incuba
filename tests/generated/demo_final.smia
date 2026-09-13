@@ -1,0 +1,101 @@
+# ejecutar sobre una carpeta nueva y un backend recien iniciado
+mkdisk -size=12 -fit=FF -path=/tmp/mia-p1-demo/principal.mia
+fdisk -size=6 -unit=M -path=/tmp/mia-p1-demo/principal.mia -name=primaria
+fdisk -size=3 -unit=M -type=E -path=/tmp/mia-p1-demo/principal.mia -name=extendida
+fdisk -size=100 -type=L -fit=BF -path=/tmp/mia-p1-demo/principal.mia -name=logica1
+fdisk -size=200 -type=L -fit=WF -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -add=-10 -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -add=10 -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -delete=full -path=/tmp/mia-p1-demo/principal.mia -name=logica1
+fdisk -size=50 -type=L -fit=FF -path=/tmp/mia-p1-demo/principal.mia -name=logica3
+mount -path=/tmp/mia-p1-demo/principal.mia -name=primaria
+mounted
+rep -name=mbr -id=471A -path=/tmp/mia-p1-demo/reportes/mbr.svg
+rep -name=disk -id=471A -path=/tmp/mia-p1-demo/reportes/disk.svg
+
+# continuar despues de 01_discos.smia
+mkfs -id=471A
+login -user=root -pass=123 -id=471A
+cat -file1=/users.txt
+rep -name=sb -id=471A -path=/tmp/mia-p1-demo/reportes/sb.svg
+rep -name=inode -id=471A -path=/tmp/mia-p1-demo/reportes/inode.svg
+rep -name=block -id=471A -path=/tmp/mia-p1-demo/reportes/block.svg
+rep -name=bm_inode -id=471A -path=/tmp/mia-p1-demo/reportes/bm_inode.txt
+rep -name=bm_block -id=471A -path=/tmp/mia-p1-demo/reportes/bm_block.txt
+
+# root activo despues de 02_ext2.smia
+mkgrp -name=equipo
+mkgrp -name=otros
+mkusr -user=Ana -pass=Clave -grp=equipo
+mkusr -user=Beto -pass=123 -grp=equipo
+mkusr -user=Caro -pass=123 -grp=otros
+mkusr -user=temporal -pass=123 -grp=equipo
+rmusr -user=temporal
+mkgrp -name=temporal
+rmgrp -name=temporal
+chgrp -user=Caro -grp=equipo
+chgrp -user=Caro -grp=otros
+cat -file1=/users.txt
+
+# preparar el contenido real con python3 tests/prepare_scripts.py
+mkdir -path=/docs/proyecto -p
+mkfile -path=/docs/vacio
+mkfile -path=/docs/numeros -size=25
+mkfile -path=/docs/real -size=999 -cont="/tmp/mia-p1-demo/contenido real.txt"
+mkfile -path=/padres/hijos/a -r -size=20
+cat -file2=/docs/real -file1=/docs/numeros -file3=/docs/vacio
+
+# este comando pausa el script; responder y o n en el campo de confirmacion
+mkfile -path=/docs/numeros -size=10
+cat -file1=/docs/numeros
+rep -name=file -id=471A -path_file_ls=/docs/real -path=/tmp/mia-p1-demo/reportes/file.txt
+rep -name=ls -id=471A -path_file_ls=/docs -path=/tmp/mia-p1-demo/reportes/ls.svg
+
+logout
+login -user=Ana -pass=Clave -id=471A
+mkdir -path=/equipo
+mkfile -path=/equipo/ana -size=20
+cat -file1=/equipo/ana
+logout
+login -user=Beto -pass=123 -id=471A
+# mismo grupo: escritura permitida
+mkfile -path=/equipo/beto -size=10
+cat -file1=/equipo/ana
+logout
+login -user=Caro -pass=123 -id=471A
+# otros: lectura permitida por 664, escritura denegada
+cat -file1=/equipo/ana
+mkfile -path=/equipo/caro -size=10
+mkdir -path=/equipo/no
+mkgrp -name=no
+logout
+login -user=root -pass=123 -id=471A
+# root puede escribir siempre
+mkfile -path=/equipo/root -size=10
+
+# cada archivo fuerza un nivel distinto
+mkfile -path=/directo -size=768
+mkfile -path=/simple -size=769
+mkfile -path=/doble -size=1793
+mkfile -path=/triple -size=20000
+cat -file1=/directo -file2=/simple -file3=/doble -file4=/triple
+rep -name=inode -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_inode.svg
+rep -name=block -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_block.svg
+rep -name=tree -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_tree.svg
+rep -name=bm_inode -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_bm_inode.txt
+rep -name=bm_block -id=471A -path=/tmp/mia-p1-demo/reportes/indirectos_bm_block.txt
+
+# contiene errores intencionales; el ultimo mounted debe ejecutarse
+mounted
+
+# error lexico
+mkfile -path="sin cerrar
+# error sintactico
+=incorrecto
+# errores de validacion, no lexicos ni sintacticos
+mkfile -path=/negativo -size=-1
+mkdir -p=true -path=/invalida
+cat -file1=/noexiste
+mkdisk -size=0 -path=/tmp/mia-p1-demo/no.mia
+mkfs -id=471A -fs=2fs
+mounted

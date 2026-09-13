@@ -1,0 +1,81 @@
+digraph G {
+rankdir=LR;
+node [shape=plaintext];
+mbr [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>MBR</b></td></tr>
+<tr><td>mbr_tamano</td><td>12582912</td></tr>
+<tr><td>mbr_fecha_creacion</td><td>11/09/2026 23:47:58</td></tr>
+<tr><td>mbr_dsk_signature</td><td>1755982637</td></tr>
+<tr><td>dsk_fit</td><td>F</td></tr>
+</table>
+>];
+partition0 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>PARTITION 1</b></td></tr>
+<tr><td>part_status</td><td>1</td></tr>
+<tr><td>part_type</td><td>P</td></tr>
+<tr><td>part_fit</td><td>W</td></tr>
+<tr><td>part_start</td><td>168</td></tr>
+<tr><td>part_s</td><td>6291456</td></tr>
+<tr><td>part_name</td><td>primaria</td></tr>
+<tr><td>part_correlative</td><td>1</td></tr>
+<tr><td>part_id</td><td>471A</td></tr>
+</table>
+>];
+mbr -> partition0;
+partition1 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>PARTITION 2</b></td></tr>
+<tr><td>part_status</td><td>0</td></tr>
+<tr><td>part_type</td><td>E</td></tr>
+<tr><td>part_fit</td><td>W</td></tr>
+<tr><td>part_start</td><td>6291624</td></tr>
+<tr><td>part_s</td><td>3145728</td></tr>
+<tr><td>part_name</td><td>extendida</td></tr>
+<tr><td>part_correlative</td><td>-1</td></tr>
+<tr><td>part_id</td><td></td></tr>
+</table>
+>];
+mbr -> partition1;
+ebr6291624 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>EBR</b></td></tr>
+<tr><td>Posicion EBR</td><td>6291624</td></tr>
+<tr><td>part_mount</td><td>0</td></tr>
+<tr><td>part_fit</td><td>W</td></tr>
+<tr><td>part_start</td><td>6291656</td></tr>
+<tr><td>part_s</td><td>102400</td></tr>
+<tr><td>part_next</td><td>-1</td></tr>
+<tr><td>part_name</td><td>logica</td></tr>
+</table>
+>];
+partition2 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>PARTITION 3</b></td></tr>
+<tr><td>part_status</td><td>0</td></tr>
+<tr><td>part_type</td><td>0</td></tr>
+<tr><td>part_fit</td><td>0</td></tr>
+<tr><td>part_start</td><td>-1</td></tr>
+<tr><td>part_s</td><td>0</td></tr>
+<tr><td>part_name</td><td></td></tr>
+<tr><td>part_correlative</td><td>-1</td></tr>
+<tr><td>part_id</td><td></td></tr>
+</table>
+>];
+mbr -> partition2;
+partition3 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td colspan='2'><b>PARTITION 4</b></td></tr>
+<tr><td>part_status</td><td>0</td></tr>
+<tr><td>part_type</td><td>0</td></tr>
+<tr><td>part_fit</td><td>0</td></tr>
+<tr><td>part_start</td><td>-1</td></tr>
+<tr><td>part_s</td><td>0</td></tr>
+<tr><td>part_name</td><td></td></tr>
+<tr><td>part_correlative</td><td>-1</td></tr>
+<tr><td>part_id</td><td></td></tr>
+</table>
+>];
+mbr -> partition3;
+}

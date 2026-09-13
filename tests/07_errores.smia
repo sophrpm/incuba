@@ -1,0 +1,14 @@
+# contiene errores intencionales; el ultimo mounted debe ejecutarse
+mounted
+
+# error lexico
+mkfile -path="sin cerrar
+# error sintactico
+=incorrecto
+# errores de validacion, no lexicos ni sintacticos
+mkfile -path=/negativo -size=-1
+mkdir -p=true -path=/invalida
+cat -file1=/noexiste
+mkdisk -size=0 -path=/tmp/mia-p1-demo/no.mia
+mkfs -id=471A -fs=2fs
+mounted

@@ -1,0 +1,13 @@
+# root activo despues de 02_ext2.smia
+mkgrp -name=equipo
+mkgrp -name=otros
+mkusr -user=Ana -pass=Clave -grp=equipo
+mkusr -user=Beto -pass=123 -grp=equipo
+mkusr -user=Caro -pass=123 -grp=otros
+mkusr -user=temporal -pass=123 -grp=equipo
+rmusr -user=temporal
+mkgrp -name=temporal
+rmgrp -name=temporal
+chgrp -user=Caro -grp=equipo
+chgrp -user=Caro -grp=otros
+cat -file1=/users.txt

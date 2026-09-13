@@ -1,0 +1,14 @@
+# ejecutar sobre una carpeta nueva y un backend recien iniciado
+mkdisk -size=12 -fit=FF -path=/tmp/mia-p1-demo/principal.mia
+fdisk -size=6 -unit=M -path=/tmp/mia-p1-demo/principal.mia -name=primaria
+fdisk -size=3 -unit=M -type=E -path=/tmp/mia-p1-demo/principal.mia -name=extendida
+fdisk -size=100 -type=L -fit=BF -path=/tmp/mia-p1-demo/principal.mia -name=logica1
+fdisk -size=200 -type=L -fit=WF -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -add=-10 -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -add=10 -path=/tmp/mia-p1-demo/principal.mia -name=logica2
+fdisk -delete=full -path=/tmp/mia-p1-demo/principal.mia -name=logica1
+fdisk -size=50 -type=L -fit=FF -path=/tmp/mia-p1-demo/principal.mia -name=logica3
+mount -path=/tmp/mia-p1-demo/principal.mia -name=primaria
+mounted
+rep -name=mbr -id=471A -path=/tmp/mia-p1-demo/reportes/mbr.svg
+rep -name=disk -id=471A -path=/tmp/mia-p1-demo/reportes/disk.svg

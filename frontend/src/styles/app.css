@@ -1,0 +1,663 @@
+/* ==========================================================
+   configuración general
+   ========================================================== */
+
+:root {
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: #172033;
+    background-color: #f3f5f9;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background-color: #f3f5f9;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+
+    background-color: #f3f5f9;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+
+/* ==========================================================
+   contenedor principal
+   ========================================================== */
+
+.app-shell {
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.app-main {
+    width: min(1100px, calc(100% - 32px));
+
+    flex: 1;
+
+    margin: 0 auto;
+    padding: 32px 0 48px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-bottom: 16px;
+}
+
+
+/* ==========================================================
+   encabezado
+   ========================================================== */
+
+.app-header {
+    padding: 42px 24px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #172033 0%,
+            #243758 100%
+        );
+}
+
+.app-header > div {
+    width: min(1100px, 100%);
+
+    margin: 0 auto;
+}
+
+.app-header-eyebrow,
+.app-header__eyebrow {
+    margin: 0 0 8px;
+
+    color: #b8c7e0;
+
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.app-header-title,
+.app-header__title {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1.1;
+}
+
+.app-header-description,
+.app-header__description {
+    max-width: 720px;
+
+    margin: 18px 0 0;
+
+    color: #d7dfec;
+
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+
+/* ==========================================================
+   estado del servidor
+   ========================================================== */
+
+/*
+ * tu componente genera varias clases cuando el servidor
+ * está conectado:
+ *
+ * class="el servidor esta online"
+ */
+.server-status--online {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 10px;
+    padding: 9px 14px;
+
+    border: 1px solid #a9dec0;
+    border-radius: 999px;
+
+    color: #17643b;
+    background-color: #edf9f2;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+/*
+ * tu componente genera estas clases cuando el servidor
+ * está desconectado:
+ *
+ * class="el servidor esta offline"
+ */
+.server-status--offline {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 10px;
+    padding: 9px 14px;
+
+    border: 1px solid #ebc0b8;
+    border-radius: 999px;
+
+    color: #8a3f32;
+    background-color: #fff2ef;
+
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.server-status__indicator {
+    width: 10px;
+    height: 10px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+}
+
+.server-status--online .server-status__indicator {
+    background-color: #21a45d;
+
+    box-shadow:
+        0 0 0 4px rgba(33, 164, 93, 0.15);
+}
+
+.server-status--offline .server-status__indicator {
+    background-color: #cb4b37;
+
+    box-shadow:
+        0 0 0 4px rgba(203, 75, 55, 0.15);
+}
+
+
+/* ==========================================================
+   paneles generales
+   ========================================================== */
+
+.panel,
+.panel-editor,
+.output-panel-container {
+    margin-bottom: 20px;
+    padding: 24px;
+
+    border: 1px solid #dfe4ed;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+        0 10px 30px rgba(31, 42, 68, 0.06);
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.panel-label {
+    margin: 0 0 5px;
+
+    color: #66738a;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.panel-title {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 1.15rem;
+}
+
+.panel-counter {
+    flex-shrink: 0;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    color: #566278;
+    background-color: #eef1f6;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.panel__help {
+    margin: 12px 0 0;
+
+    color: #728096;
+
+    font-size: 0.85rem;
+}
+
+
+/* ==========================================================
+   selector de archivos
+   ========================================================== */
+
+.file-loader {
+    min-height: 86px;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+
+    gap: 14px;
+    padding: 18px;
+
+    border: 2px dashed #cbd3df;
+    border-radius: 14px;
+
+    background-color: #f8f9fc;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.file-loader:hover {
+    border-color: #6d94ca;
+    background-color: #f1f5fb;
+}
+
+.file-loader-button {
+    flex-shrink: 0;
+
+    padding: 10px 15px;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+    background-color: #2b5ea8;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+
+    transition: background-color 0.2s ease;
+}
+
+.file-loader:hover .file-loader-button {
+    background-color: #234f90;
+}
+
+.file-loader-filename {
+    min-width: 0;
+
+    overflow: hidden;
+
+    color: #566278;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-loader-input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    overflow: hidden;
+
+    opacity: 0;
+}
+
+
+/* ==========================================================
+   editor de comandos
+   ========================================================== */
+
+.panel-editor {
+    overflow: hidden;
+}
+
+.command-editor {
+    width: 100%;
+    min-height: 320px;
+
+    display: block;
+
+    padding: 18px;
+
+    resize: vertical;
+
+    border: 1px solid #253550;
+    border-radius: 12px;
+
+    outline: none;
+
+    color: #e8edf5;
+    background-color: #121a29;
+
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        Consolas,
+        monospace;
+
+    font-size: 0.93rem;
+    line-height: 1.65;
+
+    tab-size: 4;
+}
+
+.command-editor::placeholder {
+    color: #7e8ba0;
+}
+
+.command-editor:focus {
+    border-color: #5186d2;
+
+    box-shadow:
+        0 0 0 3px rgba(81, 134, 210, 0.2);
+}
+
+.command-editor::-webkit-scrollbar {
+    width: 10px;
+}
+
+.command-editor::-webkit-scrollbar-track {
+    background-color: #182234;
+}
+
+.command-editor::-webkit-scrollbar-thumb {
+    border: 2px solid #182234;
+    border-radius: 999px;
+
+    background-color: #4a5b73;
+}
+
+
+/* ==========================================================
+   botones
+   ========================================================== */
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 12px;
+    margin: 4px 0 20px;
+}
+
+.button-clear,
+.button-analyze {
+    min-width: 160px;
+
+    padding: 11px 18px;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    font-weight: 700;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.1s ease,
+        opacity 0.2s ease;
+}
+
+.button-clear {
+    color: #34435c;
+
+    border-color: #ccd4e0;
+    background-color: #ffffff;
+}
+
+.button-clear:hover:not(:disabled) {
+    background-color: #f0f3f8;
+}
+
+.button-analyze {
+    color: #ffffff;
+
+    border-color: #2b5ea8;
+    background-color: #2b5ea8;
+}
+
+.button-analyze:hover:not(:disabled) {
+    border-color: #234f90;
+    background-color: #234f90;
+}
+
+.button-clear:active:not(:disabled),
+.button-analyze:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.button-clear:disabled,
+.button-analyze:disabled {
+    color: #9faabd;
+
+    border-color: #dce2eb;
+    background-color: #dce2eb;
+
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+
+/* ==========================================================
+   panel de salida
+   ========================================================== */
+
+.output-panel-container {
+    overflow: hidden;
+}
+
+.output-panel {
+    min-height: 220px;
+    max-height: 360px;
+
+    overflow-y: auto;
+
+    padding: 18px;
+
+    border: 1px solid #253550;
+    border-radius: 12px;
+
+    color: #dce5f2;
+    background-color: #101722;
+
+    font-family:
+        "JetBrains Mono",
+        "Fira Code",
+        Consolas,
+        monospace;
+
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.output-panel-empty {
+    margin: 0;
+
+    color: #7e8ba0;
+
+    font-style: italic;
+}
+
+.output-panel-line {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+    margin: 0 0 10px;
+
+    overflow-wrap: anywhere;
+}
+
+.output-panel-line:last-child {
+    margin-bottom: 0;
+}
+
+.output-panel-symbol {
+    flex-shrink: 0;
+
+    color: #6fa0e3;
+
+    font-weight: 700;
+}
+
+.output-panel::-webkit-scrollbar {
+    width: 10px;
+}
+
+.output-panel::-webkit-scrollbar-track {
+    background-color: #182234;
+}
+
+.output-panel::-webkit-scrollbar-thumb {
+    border: 2px solid #182234;
+    border-radius: 999px;
+
+    background-color: #4a5b73;
+}
+
+
+/* ==========================================================
+   pie de página
+   ========================================================== */
+
+.app-footer {
+    padding: 20px;
+
+    color: #6b778c;
+    background-color: #e8ecf3;
+
+    text-align: center;
+
+    font-size: 0.85rem;
+}
+
+
+/* ==========================================================
+   accesibilidad
+   ========================================================== */
+
+button:focus-visible,
+.file-loader:focus-within,
+.command-editor:focus-visible {
+    outline: 3px solid rgba(43, 94, 168, 0.25);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================
+   diseño responsivo
+   ========================================================== */
+
+@media (max-width: 640px) {
+    .app-header {
+        padding: 32px 18px;
+    }
+
+    .app-main {
+        width: min(100% - 20px, 1100px);
+
+        padding-top: 20px;
+    }
+
+    .toolbar {
+        justify-content: flex-start;
+    }
+
+    .panel,
+    .panel-editor,
+    .output-panel-container {
+        padding: 18px;
+
+        border-radius: 14px;
+    }
+
+    .panel-header {
+        flex-direction: column;
+    }
+
+    .file-loader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .file-loader-filename {
+        width: 100%;
+
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .button-clear,
+    .button-analyze {
+        width: 100%;
+    }
+
+    .command-editor {
+        min-height: 260px;
+    }
+
+    .output-panel {
+        min-height: 180px;
+    }
+}
+.output-panel { white-space: pre-wrap; overflow-wrap: anywhere; }
