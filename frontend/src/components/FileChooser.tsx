@@ -27,13 +27,13 @@ function FileChooser({
                 <input
                     className="file-loader-input"
                     type="file"
-                    accept=".smia"
+                    accept=".txt, text/plain, .smia"
                     onChange={onFileSelect}
                 />
             </label>
             <p className="panel-help">
                 Formato permitido: archivo de texto con extensión
-                .smia
+                .txt o .smia
             </p>
         </section>
     );

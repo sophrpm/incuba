@@ -4,7 +4,6 @@ interface CommandEditorProps {
     onChange: (value: string) => void; //funcion que se ejecuta cuando se edita
 }
 
-//panel de edicion de comandos
 function CommandEditor({
     value,
     onChange,
@@ -20,7 +19,6 @@ function CommandEditor({
                 value ? value.split("\n").length : 0} líneas
                 </span>
             </div>
-
             <textarea
                 className="command-editor"
                 value={value}

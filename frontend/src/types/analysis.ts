@@ -4,17 +4,12 @@ export interface ExecutionStats {
     syntaxErrors: number;
 }
 
-export interface GeneratedReport {
-    name: string;
-    url: string;
-}
 
 export interface AnalysisResponse {
     success: boolean;
     messages: string[];
     stats: ExecutionStats;
     pendingConfirmation: boolean;
-    reports: GeneratedReport[];
 }
 
 export interface HealthResponse {

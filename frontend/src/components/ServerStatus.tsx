@@ -1,6 +1,6 @@
 
 interface ServerStatusProps {
-    // indica si el servidor se encuentra online
+    // Indica si el servidor se encuentra ONLINE
     isOnline: boolean;
 }
 

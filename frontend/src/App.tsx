@@ -13,20 +13,19 @@ import ServerStatus from "./components/ServerStatus";
 import {
     analyzeCommands,
     checkServerStatus,
-    BACKEND_URL,
 } from "./services/commandAPI";
 
 import "./styles/app.css";
-import type { ExecutionStats, GeneratedReport } from "./types/analysis";
+import type { ExecutionStats} from "./types/analysis";
 
 function App() {
     // conserva el nombre del archi
     const [fileName, setFileName] = useState("");
 
-    // guarda el comandos en editor
+    // guarda el comandos en editr
     const [commandText, setCommandText] = useState("");
 
-    // guarda los mensajes de output
+    // guarda los mensajes de outut
     const [messages, setMessages] = useState<string[]>([]);
 
     const [isOnline, setIsOnline] = useState(false);
@@ -34,7 +33,6 @@ function App() {
     const [pending, setPending] = useState(false);
     const [answer, setAnswer] = useState("");
     const [stats, setStats] = useState<ExecutionStats | null>(null);
-    const [reports, setReports] = useState<GeneratedReport[]>([]);
 
     useEffect(() => {
         const verifyServer = async (): Promise<void> => {
@@ -122,7 +120,6 @@ function App() {
             
             setMessages(previous => pending ? [...previous, ...analysisResult.messages] : analysisResult.messages);
             setStats(analysisResult.stats);
-            setReports(previous => pending ? [...previous, ...analysisResult.reports] : analysisResult.reports);
             setPending(analysisResult.pendingConfirmation);
             setAnswer("");
         } catch {
@@ -143,7 +140,6 @@ function App() {
         setCommandText("");
         setMessages([]);
         setStats(null);
-        setReports([]);
     };
 
     return (
@@ -185,12 +181,6 @@ function App() {
                         <input id="confirmation" value={answer} onChange={event => setAnswer(event.target.value)} disabled={busy} autoFocus autoComplete="off" />
                         <button type="submit" disabled={busy || !answer.trim()}>Responder</button>
                     </form>
-                )}
-                {reports.length > 0 && (
-                    <section className="panel">
-                        <h2>Reportes generados</h2>
-                        {reports.map(report => <p key={report.url}><a href={`${BACKEND_URL}${report.url}`} target="_blank" rel="noreferrer">{report.name}</a></p>)}
-                    </section>
                 )}
             </main>
 
