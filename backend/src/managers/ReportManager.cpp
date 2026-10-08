@@ -1255,13 +1255,11 @@ bool ReportManager::reportFile(const string& outputPath, const string& id, const
         return false;
     }
 
-    //estado temporal root para poder leer reporte
     AppState reportState = appState;
-    reportState.session.active = true;
-    reportState.session.user = "root";
-    reportState.session.uid = 1;
-    reportState.session.gid = 1;
-    reportState.session.partitionId = id;
+    if (!reportState.session.active || reportState.session.partitionId != id){
+        message = "Error: debe iniciar sesion en la particion para reporte FILE.";
+        return false;
+    }
 
     FileManager fileManager;
     string content;
@@ -1306,11 +1304,10 @@ bool ReportManager::reportLs(const string& outputPath, const string& id, const s
     }
 
     AppState reportState = appState;
-    reportState.session.active = true;
-    reportState.session.user = "root";
-    reportState.session.uid = 1;
-    reportState.session.gid = 1;
-    reportState.session.partitionId = id;
+    if (!reportState.session.active || reportState.session.partitionId != id){
+        message = "Error: debe iniciar sesion en la particion para reporte LS.";
+        return false;
+    }
 
     FileManager fileManager;
     FileSystemManager fileSystemManager;

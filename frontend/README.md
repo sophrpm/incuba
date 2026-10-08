@@ -1,32 +1,17 @@
-# React + TypeScript + Vite
+# Interfaz MIA Proyecto 2
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript + Vite 8. Conserva el editor y los componentes del Proyecto 1; agrega login, selector de discos/particiones, explorador de solo lectura, visor de texto, journal y reportes.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm ci
+cp .env.example .env
+npm run dev
+npm run build
+npm run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`VITE_API_URL` debe contener la URL del backend, sin `/api` al final. Desarrollo: `http://localhost:2611`. Producción: dominio HTTPS de la API. Si no se configura en producción se usan rutas del mismo origen. El build está en `dist/` y se aloja como archivos estáticos.
+
+El token vive en `sessionStorage`; usuario/UID/GID se validan en C++. La contraseña se limpia después de LOGIN. Los mensajes se renderizan como texto. Los reportes se descargan con el token y se muestran mediante Blob en un iframe aislado.
+
+Instrucciones completas, pruebas y configuración Linux: [README del proyecto](../README.md) y [manual completo](../DOCUMENTACION_COMPLETA_PROYECTO2.md).

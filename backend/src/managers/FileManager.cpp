@@ -2,6 +2,8 @@
 
 #include <ctime>
 #include <algorithm>
+#include <filesystem>
+#include "utils/PathUtils.hpp"
 
 #include "managers/FileSystemManager.hpp"
 #include "managers/MountManager.hpp"
@@ -423,6 +425,16 @@ bool FileManager::writeFile(const string& path, const string& content, AppState&
 
 //busca el inodo que corresponde a una ruta
 bool FileManager::findInodeByPath(const string& path, const AppState& appState, int& inodeIndex, Inode& inode, string& message) const {
+    if (path.empty() || path[0] != '/' || path.size() > 4096){
+        message = "Error: ruta virtual invalida.";
+        return false;
+    }
+    for (const string& part : splitPath(path)){
+        if (part == "." || part == ".."){
+            message = "Error: ruta virtual no permite . ni ..";
+            return false;
+        }
+    }
     if (!appState.session.active){
         message = "Error: no hay una sesion activa.";
         return false;
@@ -449,6 +461,11 @@ bool FileManager::findInodeByPath(const string& path, const AppState& appState, 
         return false;
     }
 
+    char rootUsed;
+    if (!fileSystemManager.readInodeBitmap(mountedPartition.path, superBlock, 0, rootUsed) || rootUsed != '1'){
+        message = "Error: datos del sistema perdidos; debe formatear la particion.";
+        return false;
+    }
     inodeIndex = 0;
 
     if (!fileSystemManager.readInode(mountedPartition.path, superBlock, inodeIndex, inode)){
@@ -1477,4 +1494,271 @@ int FileManager::getPermission(const Inode& inode, int uid, int gid) const {
     }
 
     return permissionCharacter - '0';
+}
+
+//cambia la referencia sin tocar los datos del archivo
+bool FileManager::changeEntry(const string& path, const string& name, bool erase, AppState& state, string& message) const {
+    string parent = PathUtils::getParentPath(path);
+    if (parent.empty()) parent = "/";
+    int parentIndex;
+    Inode inode;
+    if (!findInodeByPath(parent, state, parentIndex, inode, message)) return false;
+    MountedPartition mounted;
+    MountManager mounts;
+    if (!mounts.getMountedPartition(state, state.session.partitionId, mounted)) return false;
+    FileSystemManager fs;
+    SuperBlock sb;
+    if (!fs.readSuperBlock(mounted.path, mounted.start, sb)) return false;
+    string oldName = PathUtils::getFileName(path);
+    for (int logical = 0; logical < 4380; logical++){
+        int block = getDataBlock(mounted.path, sb, inode, logical);
+        if (block == -1) break;
+        FolderBlock folder;
+        if (!fs.readFolderBlock(mounted.path, sb, block, folder)) return false;
+        for (Content& entry : folder.b_content){
+            if (entry.b_inodo == -1 || BinaryUtils::fixedCharToString(entry.b_name, 12) != oldName) continue;
+            if (erase) entry = Content();
+            else BinaryUtils::copyToFixedChar(entry.b_name, 12, name);
+            if (!fs.writeFolderBlock(mounted.path, sb, block, folder)) return false;
+            inode.i_mtime = time(nullptr);
+            return fs.writeInode(mounted.path, sb, parentIndex, inode);
+        }
+    }
+    message = "Error: referencia no encontrada.";
+    return false;
+}
+
+//primero revisa todo el arbol para no borrar una carpeta a medias
+bool FileManager::collectTree(const string& path, bool writing, const AppState& state, vector<string>& paths, vector<int>& visited, string& message) const {
+    int index;
+    Inode inode;
+    if (!findInodeByPath(path, state, index, inode, message)) return false;
+    if (std::find(visited.begin(), visited.end(), index) != visited.end()){
+        message = "Error: ciclo en el arbol de directorios.";
+        return false;
+    }
+    visited.push_back(index);
+    bool allowed = writing ? canWrite(inode, state.session.uid, state.session.gid) : canRead(inode, state.session.uid, state.session.gid);
+    if (!allowed){
+        message = "Error: permisos insuficientes en " + path + ". No se realizaron cambios.";
+        return false;
+    }
+    if (inode.i_type == '0'){
+        //para REMOVE se comprueba escritura sin exigir lectura
+        AppState reader = state;
+        reader.session.uid = 1;
+        vector<Content> entries;
+        if (!getDirectoryContent(path, reader, entries, message)) return false;
+        for (const Content& entry : entries){
+            string name = BinaryUtils::fixedCharToString(entry.b_name, 12);
+            if (name == "." || name == "..") continue;
+            string child = path == "/" ? "/" + name : path + "/" + name;
+            if (!collectTree(child, writing, state, paths, visited, message)) return false;
+        }
+    }
+    paths.push_back(path);
+    return true;
+}
+
+bool FileManager::remove(const string& path, AppState& state, string& message) const {
+    if (path == "/" || path == "/users.txt"){
+        message = "Error: no se puede eliminar raiz ni users.txt.";
+        return false;
+    }
+    vector<string> paths;
+    vector<int> visited;
+    if (!collectTree(path, true, state, paths, visited, message)) return false;
+    MountedPartition mounted;
+    MountManager mounts;
+    if (!mounts.getMountedPartition(state, state.session.partitionId, mounted)) return false;
+    FileSystemManager fs;
+    SuperBlock sb;
+    if (!fs.readSuperBlock(mounted.path, mounted.start, sb)) return false;
+    for (const string& current : paths){
+        int index;
+        Inode inode;
+        if (!findInodeByPath(current, state, index, inode, message)) return false;
+        if (!changeEntry(current, "", true, state, message)) return false;
+        if (!freeFileBlocks(mounted.path, mounted.start, sb, inode) || !fs.freeInode(mounted.path, mounted.start, sb, index)){
+            message = "Error: no se pudieron liberar inodos y bloques.";
+            return false;
+        }
+    }
+    message = "Elemento " + path + " eliminado correctamente.";
+    return true;
+}
+
+bool FileManager::rename(const string& path, const string& name, AppState& state, string& message) const {
+    if (name.empty() || name.size() > 12 || name == "." || name == ".." || name.find('/') != string::npos || path == "/" || path == "/users.txt"){
+        message = "Error: nombre invalido o ruta protegida.";
+        return false;
+    }
+    int index;
+    Inode inode;
+    if (!findInodeByPath(path, state, index, inode, message)) return false;
+    if (!canWrite(inode, state.session.uid, state.session.gid)){
+        message = "Error: no tiene permiso de escritura sobre el origen.";
+        return false;
+    }
+    string parent = PathUtils::getParentPath(path);
+    string target = parent == "/" ? "/" + name : parent + "/" + name;
+    if (pathExists(target, state)){
+        message = "Error: ya existe el nuevo nombre.";
+        return false;
+    }
+    if (!changeEntry(path, name, false, state, message)) return false;
+    message = "Nombre cambiado a " + name + ".";
+    return true;
+}
+
+//omite solamente las ramas sin lectura, como indica COPY
+bool FileManager::copyTree(const string& source, const string& target, AppState& state, int& skipped, vector<int>& visited, string& message) const {
+    int index;
+    Inode inode;
+    if (!findInodeByPath(source, state, index, inode, message)) return false;
+    if (!canRead(inode, state.session.uid, state.session.gid)){
+        skipped++;
+        return true;
+    }
+    if (std::find(visited.begin(), visited.end(), index) != visited.end()){
+        message = "Error: ciclo en origen.";
+        return false;
+    }
+    visited.push_back(index);
+    if (inode.i_type == '1'){
+        string content;
+        return readFile(source, state, content, message) && createFile(target, content, false, false, state, message);
+    }
+    vector<Content> entries;
+    if (!getDirectoryContent(source, state, entries, message) || !createDirectory(target, false, state, message)) return false;
+    for (const Content& entry : entries){
+        string name = BinaryUtils::fixedCharToString(entry.b_name, 12);
+        if (name == "." || name == "..") continue;
+        if (!copyTree(source + "/" + name, target + "/" + name, state, skipped, visited, message)) return false;
+    }
+    return true;
+}
+
+bool FileManager::copy(const string& path, const string& destination, AppState& state, string& message) const {
+    int index;
+    Inode origin;
+    if (!findInodeByPath(path, state, index, origin, message)) return false;
+    Inode target;
+    if (!findInodeByPath(destination, state, index, target, message)) return false;
+    if (target.i_type != '0' || !canWrite(target, state.session.uid, state.session.gid)){
+        message = "Error: destino debe ser una carpeta con permiso de escritura.";
+        return false;
+    }
+    if (path == "/" || destination == path || destination.find(path + "/") == 0){
+        message = "Error: no puede copiar dentro del propio origen.";
+        return false;
+    }
+    string name = PathUtils::getFileName(path);
+    string newPath = destination == "/" ? "/" + name : destination + "/" + name;
+    if (pathExists(newPath, state)){
+        message = "Error: nombre duplicado en destino.";
+        return false;
+    }
+    int skipped = 0;
+    vector<int> visited;
+    if (!copyTree(path, newPath, state, skipped, visited, message)) return false;
+    if (!pathExists(newPath, state)){
+        message = "Error: origen sin permiso de lectura.";
+        return false;
+    }
+    message = "Copia completada. Elementos omitidos por permisos: " + to_string(skipped) + ".";
+    return true;
+}
+
+//en la misma particion solo cambia las referencias
+bool FileManager::move(const string& path, const string& destination, AppState& state, string& message) const {
+    int sourceIndex;
+    Inode source;
+    int targetIndex;
+    Inode target;
+    if (!findInodeByPath(path, state, sourceIndex, source, message) || !findInodeByPath(destination, state, targetIndex, target, message)) return false;
+    if (path == "/" || path == "/users.txt" || destination == path || destination.find(path + "/") == 0){
+        message = "Error: movimiento invalido o ruta protegida.";
+        return false;
+    }
+    if (!canWrite(source, state.session.uid, state.session.gid) || target.i_type != '0' || !canWrite(target, state.session.uid, state.session.gid)){
+        message = "Error: permisos de escritura insuficientes en origen o destino.";
+        return false;
+    }
+    MountedPartition mounted;
+    MountManager mounts;
+    if (!mounts.getMountedPartition(state, state.session.partitionId, mounted)) return false;
+    FileSystemManager fs;
+    SuperBlock sb;
+    if (!fs.readSuperBlock(mounted.path, mounted.start, sb)) return false;
+    string name = PathUtils::getFileName(path);
+    if (findEntry(mounted.path, sb, target, name) != -1){
+        message = "Error: nombre duplicado en destino.";
+        return false;
+    }
+    if (!addDirectoryEntry(mounted.path, mounted.start, sb, targetIndex, target, name, sourceIndex) || !changeEntry(path, "", true, state, message)) return false;
+    if (source.i_type == '0'){
+        FolderBlock folder;
+        if (!fs.readFolderBlock(mounted.path, sb, source.i_block[0], folder)) return false;
+        folder.b_content[1].b_inodo = targetIndex;
+        if (!fs.writeFolderBlock(mounted.path, sb, source.i_block[0], folder)) return false;
+    }
+    source.i_mtime = time(nullptr);
+    if (!fs.writeInode(mounted.path, sb, sourceIndex, source)) return false;
+    message = "Elemento movido correctamente.";
+    return true;
+}
+
+//tabla simple: ? uno, * uno o mas caracteres
+bool FileManager::matchesPattern(const string& name, const string& pattern) const {
+    vector<vector<bool>> matches(pattern.size() + 1, vector<bool>(name.size() + 1, false));
+    matches[0][0] = true;
+    for (size_t i = 1; i <= pattern.size(); i++){
+        for (size_t j = 1; j <= name.size(); j++){
+            if (pattern[i - 1] == '*') matches[i][j] = matches[i - 1][j - 1] || matches[i][j - 1];
+            else if (pattern[i - 1] == '?' || pattern[i - 1] == name[j - 1]) matches[i][j] = matches[i - 1][j - 1];
+        }
+    }
+    return matches[pattern.size()][name.size()];
+}
+
+bool FileManager::findTree(const string& path, const string& pattern, const AppState& state, vector<int>& visited, vector<string>& matches, string& message) const {
+    int index;
+    Inode inode;
+    if (!findInodeByPath(path, state, index, inode, message)) return false;
+    if (!canRead(inode, state.session.uid, state.session.gid)) return true;
+    if (std::find(visited.begin(), visited.end(), index) != visited.end()){
+        message = "Error: ciclo en directorios.";
+        return false;
+    }
+    visited.push_back(index);
+    if (path != "/" && matchesPattern(PathUtils::getFileName(path), pattern)) matches.push_back(path);
+    if (inode.i_type == '0'){
+        vector<Content> entries;
+        if (!getDirectoryContent(path, state, entries, message)) return false;
+        for (const Content& entry : entries){
+            string name = BinaryUtils::fixedCharToString(entry.b_name, 12);
+            if (name == "." || name == "..") continue;
+            string child = path == "/" ? "/" + name : path + "/" + name;
+            if (!findTree(child, pattern, state, visited, matches, message)) return false;
+        }
+    }
+    return true;
+}
+
+bool FileManager::find(const string& path, const string& pattern, const AppState& state, string& message) const {
+    int index;
+    Inode root;
+    if (!findInodeByPath(path, state, index, root, message)) return false;
+    if (root.i_type != '0' || !canRead(root, state.session.uid, state.session.gid)){
+        message = "Error: busqueda requiere carpeta con lectura.";
+        return false;
+    }
+    vector<int> visited;
+    vector<string> matches;
+    if (!findTree(path, pattern, state, visited, matches, message)) return false;
+    message = "Busqueda desde " + path + ":\n";
+    for (const string& match : matches) message += match + "\n";
+    if (matches.empty()) message += "Sin coincidencias.";
+    return true;
 }

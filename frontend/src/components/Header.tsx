@@ -1,7 +1,7 @@
 function Header () {
     return (
         <header className="app-header">
-            <h1>Sistema ext2 202405047</h1>
+            <h1>Sistema EXT2 / EXT3 202405047</h1>
         </header>
     )
 }

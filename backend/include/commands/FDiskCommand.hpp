@@ -14,7 +14,7 @@ class FDiskCommand {
 public:
 
     //ejecuta fdisk
-    ValidationResult execute(const ParsedCommand& command) const;
+    ValidationResult execute(const ParsedCommand& command, bool validateOnly = false) const;
 
 
 private:

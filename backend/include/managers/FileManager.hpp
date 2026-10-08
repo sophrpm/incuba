@@ -36,7 +36,18 @@ public:
     //verifica si una ruta ya existe
     bool pathExists(const string& path, const AppState& appState) const;
 
+    bool remove(const string& path, AppState& state, string& message) const;
+    bool rename(const string& path, const string& name, AppState& state, string& message) const;
+    bool copy(const string& path, const string& destination, AppState& state, string& message) const;
+    bool move(const string& path, const string& destination, AppState& state, string& message) const;
+    bool find(const string& path, const string& pattern, const AppState& state, string& message) const;
+
 private:
+    bool changeEntry(const string& path, const string& name, bool erase, AppState& state, string& message) const;
+    bool collectTree(const string& path, bool writing, const AppState& state, vector<string>& paths, vector<int>& visited, string& message) const;
+    bool copyTree(const string& source, const string& target, AppState& state, int& skipped, vector<int>& visited, string& message) const;
+    bool findTree(const string& path, const string& pattern, const AppState& state, vector<int>& visited, vector<string>& matches, string& message) const;
+    bool matchesPattern(const string& name, const string& pattern) const;
 
     //divide una ruta en sus partes
     vector<string> splitPath(const string& path) const;

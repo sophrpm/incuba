@@ -9,7 +9,7 @@ using namespace std;
 
 
 //ejecuta fdisk
-ValidationResult FDiskCommand::execute(const ParsedCommand& command) const {
+ValidationResult FDiskCommand::execute(const ParsedCommand& command, bool validateOnly) const {
 
     //verifica parametros permitidos
     for (const ParsedParam& param : command.params){
@@ -83,6 +83,20 @@ ValidationResult FDiskCommand::execute(const ParsedCommand& command) const {
         return {false, "FDISK: el nombre de la particion no puede superar 16 caracteres."};
     }
 
+    ParsedCommand selected = command;
+    string operation;
+    for (const ParsedParam& param : command.params){
+        if (param.name == "size" || param.name == "add" || param.name == "delete"){
+            operation = param.name;
+            break;
+        }
+    }
+    for (size_t i = 0; i < selected.params.size();){
+        string key = selected.params[i].name;
+        if ((key == "size" || key == "add" || key == "delete") && key != operation) selected.params.erase(selected.params.begin() + i);
+        else i++;
+    }
+    if (selected.params.size() != command.params.size()) return execute(selected, validateOnly);
     bool deleteOperation = isDeleteOperation(command);
     bool addOperation = isAddOperation(command);
 
@@ -103,8 +117,8 @@ ValidationResult FDiskCommand::execute(const ParsedCommand& command) const {
 
         string deleteType = StringUtils::toLower(command.getParam("delete"));
 
-        if (deleteType != "full"){
-            return {false, "FDISK: -delete solo acepta full."};
+        if (deleteType != "full" && deleteType != "fast"){
+            return {false, "FDISK: -delete solo acepta fast o full."};
         }
 
         //no debe mezclar parametros de creacion
@@ -115,7 +129,8 @@ ValidationResult FDiskCommand::execute(const ParsedCommand& command) const {
         if (command.hasParam("unit") && (!command.paramHasValue("unit") || (StringUtils::toUpper(command.getParam("unit")) != "B" && StringUtils::toUpper(command.getParam("unit")) != "K" && StringUtils::toUpper(command.getParam("unit")) != "M"))){
             return {false, "FDISK: -unit solo acepta B, K o M."};
         }
-        bool success = diskManager.deletePartition(path, name, message);
+        if (validateOnly) return {true, "FDISK: parametros validos."};
+        bool success = diskManager.deletePartition(path, name, message, deleteType == "full");
 
         return {success, message};
     }

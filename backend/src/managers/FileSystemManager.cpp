@@ -11,12 +11,21 @@ using namespace std;
 
 //formatea una particion como ext2
 bool FileSystemManager::formatExt2(const string& path, int partitionStart, int partitionSize, string& message) const {
+    return format(path, partitionStart, partitionSize, 2, message);
+}
+
+bool FileSystemManager::formatExt3(const string& path, int start, int size, string& message) const {
+    return format(path, start, size, 3, message);
+}
+
+bool FileSystemManager::format(const string& path, int partitionStart, int partitionSize, int type, string& message) const {
     if (partitionStart < 0 || partitionSize <= static_cast<int>(sizeof(SuperBlock)) || static_cast<long long>(partitionStart) + partitionSize > BinaryUtils::getFileSize(path)){
         message = "Error: la particion no tiene un tamaño valido.";
         return false;
     }
 
-    int inodeCount = calculateInodes(partitionSize);
+    int journalSize = type == 3 ? static_cast<int>(sizeof(Journal)) : 0;
+    int inodeCount = calculateInodes(partitionSize - journalSize);
 
     if (inodeCount < 2){
         message = "Error: la particion es demasiado pequeña para crear EXT2.";
@@ -30,6 +39,18 @@ bool FileSystemManager::formatExt2(const string& path, int partitionStart, int p
     }
 
     SuperBlock superBlock = createSuperBlock(partitionStart, partitionSize, inodeCount);
+    superBlock.s_filesystem_type = type;
+    superBlock.s_bm_inode_start += journalSize;
+    superBlock.s_bm_block_start += journalSize;
+    superBlock.s_inode_start += journalSize;
+    superBlock.s_block_start += journalSize;
+    if (type == 3){
+        Journal journal;
+        if (!BinaryUtils::writeStruct(path, partitionStart + sizeof(SuperBlock), journal)){
+            message = "Error: no se pudo iniciar journal.";
+            return false;
+        }
+    }
 
     //escribe el superbloque inicial
     if (!writeSuperBlock(path, partitionStart, superBlock)){
@@ -73,7 +94,7 @@ bool FileSystemManager::formatExt2(const string& path, int partitionStart, int p
         return false;
     }
 
-    message = "Sistema de archivos EXT2 creado correctamente.";
+    message = "Sistema de archivos EXT" + to_string(type) + " creado correctamente.";
     return true;
 }
 
@@ -97,13 +118,16 @@ bool FileSystemManager::readSuperBlock(const string& path, int partitionStart, S
             partitionSize = partition.part_s;
         }
     }
-    int count = calculateInodes(partitionSize);
-    long long inodeStart = static_cast<long long>(partitionStart) + sizeof(SuperBlock) + 4LL * count;
+    int journalSize = superBlock.s_filesystem_type == 3 ? static_cast<int>(sizeof(Journal)) : 0;
+    int count = superBlock.s_inodes_count;
+    long long bitmapStart = static_cast<long long>(partitionStart) + sizeof(SuperBlock) + journalSize;
+    long long inodeStart = bitmapStart + 4LL * count;
     long long blockStart = inodeStart + static_cast<long long>(count) * sizeof(Inode);
-    bool validCounts = count >= 2 && superBlock.s_filesystem_type == 2 && superBlock.s_inodes_count == count && superBlock.s_blocks_count == 3 * count;
+    long long end = blockStart + 3LL * count * 64;
+    bool validCounts = count >= 2 && (superBlock.s_filesystem_type == 2 || superBlock.s_filesystem_type == 3) && superBlock.s_blocks_count == 3LL * count;
     bool validSizes = superBlock.s_inode_s == static_cast<int>(sizeof(Inode)) && superBlock.s_block_s == 64;
-    bool validBitmaps = superBlock.s_bm_inode_start == partitionStart + static_cast<int>(sizeof(SuperBlock)) && superBlock.s_bm_block_start == superBlock.s_bm_inode_start + count;
-    bool validTables = superBlock.s_inode_start == inodeStart && superBlock.s_block_start == blockStart;
+    bool validBitmaps = superBlock.s_bm_inode_start == bitmapStart && superBlock.s_bm_block_start == bitmapStart + count;
+    bool validTables = superBlock.s_inode_start == inodeStart && superBlock.s_block_start == blockStart && end <= static_cast<long long>(partitionStart) + partitionSize;
     return validCounts && validSizes && validBitmaps && validTables;
 
 }
@@ -806,4 +830,45 @@ void FileSystemManager::updateFirstFree(const string& path, SuperBlock& superBlo
         superBlock.s_first_blo =
             superBlock.s_block_start + freeBlock * superBlock.s_block_s;
     }
+}
+
+//lee la bitacora aun despues de loss
+bool FileSystemManager::readJournal(const string& path, int start, Journal& journal) const {
+    SuperBlock sb;
+    if (!readSuperBlock(path, start, sb) || sb.s_magic != 0xEF53 || sb.s_filesystem_type != 3) return false;
+    return BinaryUtils::readStruct(path, start + sizeof(SuperBlock), journal) && journal.j_count >= 0 && journal.j_count <= JOURNAL_CAPACITY;
+}
+
+bool FileSystemManager::appendJournal(const string& path, int start, const string& operation, const string& route, const string& content, string& message) const {
+    Journal journal;
+    if (!readJournal(path, start, journal)){
+        message = "Error: no se pudo leer journal EXT3.";
+        return false;
+    }
+    if (journal.j_count == JOURNAL_CAPACITY){
+        message = "Error: journal lleno (50 operaciones); no se realizaron cambios.";
+        return false;
+    }
+    Information& entry = journal.j_content[journal.j_count++];
+    BinaryUtils::copyToFixedChar(entry.i_operation, 10, operation);
+    BinaryUtils::copyToFixedChar(entry.i_path, 32, route);
+    BinaryUtils::copyToFixedChar(entry.i_content, 64, content);
+    entry.i_date = static_cast<float>(time(nullptr));
+    return BinaryUtils::writeStruct(path, start + sizeof(SuperBlock), journal);
+}
+
+bool FileSystemManager::simulateLoss(const string& path, int start, string& message) const {
+    SuperBlock sb;
+    Journal journal;
+    if (!readSuperBlock(path, start, sb) || !readJournal(path, start, journal)){
+        message = "Error: LOSS requiere una particion EXT3 valida.";
+        return false;
+    }
+    int end = sb.s_block_start + sb.s_blocks_count * sb.s_block_s;
+    if (!BinaryUtils::clearSpace(path, sb.s_bm_inode_start, end - sb.s_bm_inode_start)){
+        message = "Error: no se pudieron limpiar las areas de datos.";
+        return false;
+    }
+    message = "LOSS completado; superbloque y journal conservados. Debe formatear para volver a utilizar archivos.";
+    return true;
 }

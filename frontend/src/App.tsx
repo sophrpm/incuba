@@ -3,6 +3,7 @@ import {
     useState,
 } from "react";
 
+import Explorer from "./components/Explorer";
 import Buttons from "./components/Buttons";
 import CommandEditor from "./components/CommandEditor";
 import FileChooser from "./components/FileChooser";
@@ -19,6 +20,7 @@ import "./styles/app.css";
 import type { ExecutionStats} from "./types/analysis";
 
 function App() {
+    const [revision, setRevision] = useState(0);
     // conserva el nombre del archi
     const [fileName, setFileName] = useState("");
 
@@ -59,11 +61,11 @@ function App() {
             selectedFile.name.toLowerCase();
 
         const validExtension =
-            selectedFileName.endsWith(".smia");
+            selectedFileName.endsWith(".smia") || selectedFileName.endsWith(".txt");
 
         if (!validExtension) {
             setMessages([
-                "Error: solo se permiten archivos con extensión .smia.",
+                "Error: solo se permiten archivos con extensión .smia o .txt.",
             ]);
 
             return;
@@ -122,6 +124,7 @@ function App() {
             setStats(analysisResult.stats);
             setPending(analysisResult.pendingConfirmation);
             setAnswer("");
+            setRevision(value => value + 1);
         } catch {
             
             setIsOnline(false);
@@ -153,6 +156,8 @@ function App() {
                     />
                 </div>
 
+                <Explorer revision={revision} onChange={() => setRevision(value => value + 1)} />
+
                 <FileChooser
                     fileName={fileName}
                     onFileSelect={handleFileSelected}
@@ -177,7 +182,7 @@ function App() {
                 />
                 {pending && (
                     <form className="panel" onSubmit={event => { event.preventDefault(); void handleAnalyze(); }}>
-                        <label htmlFor="confirmation">¿Desea sobrescribirlo? [y/n]: </label>
+                        <label htmlFor="confirmation">Confirme la operación [y/n]: </label>
                         <input id="confirmation" value={answer} onChange={event => setAnswer(event.target.value)} disabled={busy} autoFocus autoComplete="off" />
                         <button type="submit" disabled={busy || !answer.trim()}>Responder</button>
                     </form>
@@ -185,7 +190,7 @@ function App() {
             </main>
 
             <footer className="app-footer">
-                Proyecto 1 · Analizador léxico y sintáctico EXT2
+                Proyecto 2 · Sistema de archivos EXT2 / EXT3
             </footer>
         </div>
     );

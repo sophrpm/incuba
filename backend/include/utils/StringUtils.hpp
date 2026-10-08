@@ -10,6 +10,7 @@ using namespace std;
 //utilidades para trabajar con texto
 class StringUtils {
 public:
+    static bool isText(const string& content);
     static int toPositiveInt(const string& text);
 
     //convierte texto a minuscula

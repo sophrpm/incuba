@@ -1,0 +1,17 @@
+[Unit]
+Description=MIA EXT2 EXT3 backend
+After=network.target
+
+[Service]
+Type=simple
+User=mia
+Group=mia
+WorkingDirectory=/opt/mia
+EnvironmentFile=/opt/mia/.env
+ExecStart=/opt/mia/backend/build/202405047_ext2_backend
+Restart=on-failure
+RestartSec=3
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

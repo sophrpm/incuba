@@ -165,16 +165,14 @@ char MountManager::getDiskLetter(const AppState& appState, const string& path) c
 
 //obtiene el siguiente correlativo del disco
 int MountManager::getNextCorrelative(const AppState& appState, const string& path) const {
-    int greaterCorrelative = 0;
-
-    //busca mayor correlativo del mismo disco
-    for (const MountedPartition& mountedPartition : appState.mountedPartitions){
-        if (mountedPartition.path == path && mountedPartition.correlative > greaterCorrelative){
-            greaterCorrelative = mountedPartition.correlative;
+    for (int number = 1; number <= 9; number++){
+        bool used = false;
+        for (const MountedPartition& partition : appState.mountedPartitions){
+            if (partition.path == path && partition.correlative == number){ used = true; break; }
         }
+        if (!used) return number;
     }
-
-    return greaterCorrelative + 1;
+    return 10;
 }
 
 
@@ -227,4 +225,33 @@ bool MountManager::updatePartitionMount(const string& path, const string& name, 
     BinaryUtils::copyToFixedChar(partition.part_id, 4, id);
 
     return diskManager.writeMBR(path, mbr);
+}
+
+//quita montaje y reinicia correlativo
+bool MountManager::unmountPartition(const string& id, AppState& state, string& message) const {
+    for (size_t i = 0; i < state.mountedPartitions.size(); i++){
+        MountedPartition partition = state.mountedPartitions[i];
+        if (partition.id != id) continue;
+        DiskManager disks;
+        MBR mbr;
+        if (!disks.readMBR(partition.path, mbr)) return false;
+        int index = disks.findPartition(mbr, partition.name);
+        if (index < 0) return false;
+        mbr.mbr_partitions[index].part_status = '0';
+        mbr.mbr_partitions[index].part_correlative = 0;
+        BinaryUtils::copyToFixedChar(mbr.mbr_partitions[index].part_id, 4, "");
+        if (!disks.writeMBR(partition.path, mbr)) return false;
+        FileSystemManager fs;
+        SuperBlock sb;
+        if (fs.readSuperBlock(partition.path, partition.start, sb) && sb.s_magic == 0xEF53){
+            sb.s_umtime = time(nullptr);
+            if (!fs.writeSuperBlock(partition.path, partition.start, sb)) return false;
+        }
+        state.mountedPartitions.erase(state.mountedPartitions.begin() + i);
+        if (state.session.partitionId == id) state.session = Session();
+        message = "Particion " + id + " desmontada correctamente.";
+        return true;
+    }
+    message = "Error: identificador no montado.";
+    return false;
 }

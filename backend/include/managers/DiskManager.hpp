@@ -19,7 +19,7 @@ public:
 
     bool createPartition(const string& path, int sizeBytes, char type, char fit, const string& name, string& message) const;
 
-    bool deletePartition(const string& path, const string& name, string& message) const;
+    bool deletePartition(const string& path, const string& name, string& message, bool full = true) const;
 
     //aumenta o reduce tamaño de una particion
     bool resizePartition(const string& path, const string& name, int addBytes, string& message) const;
@@ -60,9 +60,9 @@ private:
 
     bool createFirstEBR(const string& path, const Partition& extendedPartition) const;
 
-    bool deletePrimaryOrExtended(const string& path, MBR& mbr, int partitionIndex, string& message) const;
+    bool deletePrimaryOrExtended(const string& path, MBR& mbr, int partitionIndex, string& message, bool full) const;
 
-    bool deleteLogical(const string& path, const string& name, string& message) const;
+    bool deleteLogical(const string& path, const string& name, string& message, bool full) const;
 
     //modifica primaria o extendida
     bool resizePrimaryOrExtended(const string& path, MBR& mbr, int partitionIndex, int addBytes, string& message) const;

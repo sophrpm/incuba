@@ -81,4 +81,17 @@ struct PointerBlock {
 };
 
 
+//50 operaciones persistentes por particion ext3
+const int JOURNAL_CAPACITY = 50;
+struct Information {
+    char i_operation[10] = {};
+    char i_path[32] = {};
+    char i_content[64] = {};
+    float i_date = 0;
+};
+struct Journal {
+    int j_count = 0;
+    Information j_content[JOURNAL_CAPACITY];
+};
+
 #endif

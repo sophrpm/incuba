@@ -69,7 +69,13 @@ public:
     //lee valor del bitmap de bloques
     bool readBlockBitmap(const string& path, const SuperBlock& superBlock, int blockIndex, char& value) const;
 
+    bool formatExt3(const string& path, int start, int size, string& message) const;
+    bool readJournal(const string& path, int start, Journal& journal) const;
+    bool appendJournal(const string& path, int start, const string& operation, const string& route, const string& content, string& message) const;
+    bool simulateLoss(const string& path, int start, string& message) const;
+
 private:
+    bool format(const string& path, int partitionStart, int partitionSize, int type, string& message) const;
 
     //calcula cantidad de inodos para ext2
     int calculateInodes(int partitionSize) const;

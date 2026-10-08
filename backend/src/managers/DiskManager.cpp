@@ -1,4 +1,5 @@
 #include "managers/DiskManager.hpp"
+#include "structures/Ext2Structures.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -180,7 +181,7 @@ bool DiskManager::createPartition(const string& path, int sizeBytes, char type, 
 
 
 //elimina una particion
-bool DiskManager::deletePartition(const string& path, const string& name, string& message) const {
+bool DiskManager::deletePartition(const string& path, const string& name, string& message, bool full) const {
     if (!diskExists(path)){
         message = "Error: el disco indicado no existe.";
         return false;
@@ -202,7 +203,7 @@ bool DiskManager::deletePartition(const string& path, const string& name, string
     int partitionIndex = findPartition(mbr, name);
 
     if (partitionIndex != -1){
-        return deletePrimaryOrExtended(path, mbr, partitionIndex, message);
+        return deletePrimaryOrExtended(path, mbr, partitionIndex, message, full);
     }
 
     //si no existe ahi busca una logica
@@ -210,7 +211,7 @@ bool DiskManager::deletePartition(const string& path, const string& name, string
     int ebrPosition = -1;
 
     if (findLogicalPartition(path, name, logicalPartition, ebrPosition)){
-        return deleteLogical(path, name, message);
+        return deleteLogical(path, name, message, full);
     }
 
     message = "Error: no existe una particion con el nombre " + name + ".";
@@ -777,7 +778,7 @@ bool DiskManager::createFirstEBR(const string& path, const Partition& extendedPa
 
 
 //elimina primaria o extendida
-bool DiskManager::deletePrimaryOrExtended(const string& path, MBR& mbr, int partitionIndex, string& message) const {
+bool DiskManager::deletePrimaryOrExtended(const string& path, MBR& mbr, int partitionIndex, string& message, bool full) const {
     if (partitionIndex < 0 || partitionIndex >= 4){
         message = "Error: posicion de particion no valida.";
         return false;
@@ -798,7 +799,7 @@ bool DiskManager::deletePrimaryOrExtended(const string& path, MBR& mbr, int part
     }
 
     //elimina sus datos de la region reservada
-    if (!clearSpace(path, partition.part_start, partition.part_s)){
+    if (full && !clearSpace(path, partition.part_start, partition.part_s)){
         message = "Error: no se pudo limpiar el espacio de la particion.";
         return false;
     }
@@ -817,7 +818,7 @@ bool DiskManager::deletePrimaryOrExtended(const string& path, MBR& mbr, int part
 
 
 //elimina una particion logica
-bool DiskManager::deleteLogical(const string& path, const string& name, string& message) const {
+bool DiskManager::deleteLogical(const string& path, const string& name, string& message, bool full) const {
     MBR mbr;
 
     if (!readMBR(path, mbr)){
@@ -864,7 +865,7 @@ bool DiskManager::deleteLogical(const string& path, const string& name, string& 
 
             //si es la primera deja el ebr inicial vacio
             if (currentPosition == extendedStart){
-                if (!clearSpace(path, currentEBR.part_start, currentEBR.part_s)){
+                if (full && !clearSpace(path, currentEBR.part_start, currentEBR.part_s)){
                     message = "Error: no se pudo limpiar la particion logica.";
                     return false;
                 }
@@ -902,7 +903,7 @@ bool DiskManager::deleteLogical(const string& path, const string& name, string& 
             int clearSize = logicalEnd - currentPosition;
 
             //borra ebr y espacio de la logica
-            if (!clearSpace(path, currentPosition, clearSize)){
+            if (full && !clearSpace(path, currentPosition, clearSize)){
                 BinaryUtils::writeStruct(path, previousPosition, previousEBR);
 
                 message = "Error: no se pudo limpiar la particion logica.";
@@ -1015,6 +1016,16 @@ bool DiskManager::resizePrimaryOrExtended(const string& path, MBR& mbr, int part
     }
 
 
+    //no corta las estructuras reservadas de un sistema formateado
+    if (partition.part_type == 'P'){
+        SuperBlock sb;
+        if (!BinaryUtils::readStruct(path, partition.part_start, sb)) return false;
+        long long fsEnd = static_cast<long long>(sb.s_block_start) + static_cast<long long>(sb.s_blocks_count) * sb.s_block_s;
+        if (sb.s_magic == 0xEF53 && fsEnd > static_cast<long long>(partition.part_start) + newSize){
+            message = "Error: la reduccion cortaria estructuras del sistema de archivos.";
+            return false;
+        }
+    }
     //una extendida no puede cortar sus ebr o logicas
     if (partition.part_type == 'E'){
         int extendedStart = partition.part_start;

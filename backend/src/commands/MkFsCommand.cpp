@@ -12,7 +12,7 @@ ValidationResult MkFsCommand::execute(const ParsedCommand& command, AppState& ap
 
     //verifica parametros permitidos
     for (const ParsedParam& param : command.params){
-        if (param.name != "id" && param.name != "type"){
+        if (param.name != "id" && param.name != "type" && param.name != "fs"){
             return {false, "MKFS: parametro no reconocido -" + param.name + "."};
         }
     }
@@ -68,8 +68,11 @@ ValidationResult MkFsCommand::execute(const ParsedCommand& command, AppState& ap
     FileSystemManager fileSystemManager;
     string message;
 
+    if (command.countParam("fs") > 1 || (command.hasParam("fs") && !command.paramHasValue("fs"))) return {false, "MKFS: parametro -fs invalido."};
+    string fs = command.hasParam("fs") ? StringUtils::toLower(command.getParam("fs")) : "2fs";
+    if (fs != "2fs" && fs != "3fs") return {false, "MKFS: -fs acepta 2fs o 3fs."};
     //formatea la particion
-    bool success = fileSystemManager.formatExt2(mountedPartition.path, mountedPartition.start, mountedPartition.size, message);
+    bool success = fs == "3fs" ? fileSystemManager.formatExt3(mountedPartition.path, mountedPartition.start, mountedPartition.size, message) : fileSystemManager.formatExt2(mountedPartition.path, mountedPartition.start, mountedPartition.size, message);
 
     if (success && appState.session.partitionId == id){
         appState.session = Session();

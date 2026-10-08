@@ -75,7 +75,7 @@ ParseResult CommandParser::parse(const vector<Token>& tokens) const {
 
         bool commandHasError = false;
 
-        const string knownCommands = " mkdisk rmdisk fdisk mount mounted mkfs cat login logout mkgrp rmgrp mkusr rmusr chgrp mkfile mkdir rep ";
+        const string knownCommands = " mkdisk rmdisk fdisk mount mounted mkfs cat login logout mkgrp rmgrp mkusr rmusr chgrp mkfile mkdir rep unmount remove rename copy move find loss journaling exec ";
         if (knownCommands.find(" " + parsedCommand.name + " ") == string::npos){
             result.errors.push_back("Error sintactico: comando no reconocido " + parsedCommand.name + ".");
             commandHasError = true;

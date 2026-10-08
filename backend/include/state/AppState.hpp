@@ -13,6 +13,9 @@ using namespace std;
 //guarda una pregunta pendiente, no estructuras de ext2
 struct PendingConfirmation {
     bool active = false;
+    string operation = "mkfile";
+    string name;
+    string deleteType;
     string path;
     string content;
     bool recursive = false;

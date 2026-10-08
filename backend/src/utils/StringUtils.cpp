@@ -96,3 +96,30 @@ int StringUtils::toPositiveInt(const string& text){
     }
     return value;
 }
+
+//check de texto utf8, no muestra binarios como si fueran texto
+bool StringUtils::isText(const string& content){
+    size_t position = 0;
+    while (position < content.size()){
+        unsigned char character = content[position++];
+        if (character < 128){
+            if ((character < 32 && character != '\n' && character != '\r' && character != '\t') || character == 127) return false;
+            continue;
+        }
+        int following;
+        unsigned int code;
+        unsigned int minimum;
+        if (character >= 194 && character <= 223){ following = 1; code = character & 31; minimum = 128; }
+        else if (character >= 224 && character <= 239){ following = 2; code = character & 15; minimum = 2048; }
+        else if (character >= 240 && character <= 244){ following = 3; code = character & 7; minimum = 65536; }
+        else return false;
+        if (position + following > content.size()) return false;
+        for (int i = 0; i < following; i++){
+            unsigned char next = content[position++];
+            if (next < 128 || next > 191) return false;
+            code = (code << 6) | (next & 63);
+        }
+        if (code < minimum || code > 0x10FFFF || (code >= 0xD800 && code <= 0xDFFF)) return false;
+    }
+    return true;
+}

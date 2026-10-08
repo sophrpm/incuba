@@ -27,6 +27,8 @@ public:
     //verifica si ya esta montada
     bool isMounted(const AppState& appState, const string& path, const string& name) const;
 
+    bool unmountPartition(const string& id, AppState& state, string& message) const;
+
 private:
 
     //obtiene la letra que le corresponde al disco
