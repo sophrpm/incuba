@@ -29,3 +29,11 @@ Los scripts originales usan `/tmp/mia-p1-demo`. El preparador adapta las rutas y
 - Comentarios, líneas vacías, errores léxicos/sintácticos separados y contadores exactos.
 
 La fixture de permisos escribe `000` en un inodo exclusivamente de prueba para demostrar que root lo ignora y el propietario sin lectura recibe error. No agrega CHMOD al proyecto 1.
+
+## Proyecto 2
+
+`python3 tests/project2.py` verifica EXT3 y 50 registros, comandos nuevos, permisos, restauración por falta de espacio, EBR FAST/FULL, sesiones independientes, concurrencia, LOSS y persistencia tras reiniciar. Usa un directorio temporal y su propio puerto 2614; `MIA_P2_PORT` permite cambiarlo.
+
+`node tests/browser.mjs` usa Playwright/Chromium para la interfaz real, backend 2615 y Vite 5175. `MIA_PLAYWRIGHT_MODULE` permite indicar la instalación del módulo y `MIA_CHROMIUM_PATH` el ejecutable. Guarda capturas móvil/escritorio y RESULTADOS_FRONTEND.json. Los servidores creados por la prueba se detienen al finalizar.
+
+Demostración actual: cargue `08_proyecto2.smia` con datos nuevos y explore; use `09_loss.smia` para LOSS. Las rutas físicas relativas se guardan bajo los directorios configurados. La regresión previa ahora obtiene token y confirma DELETE desde la API; conserva las verificaciones del contenido binario.

@@ -7,9 +7,9 @@ inode0 [label=<
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>192</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>0</td></tr>
 <tr><td>i_perm</td><td>777</td></tr>
 <tr><td>i_block[0]</td><td>0</td></tr>
@@ -39,16 +39,16 @@ block0 [label=<
 <tr><td>privada</td><td>2</td></tr>
 </table>
 >];
-block0 -> inode1 [label="users.txt"];
+block0 -> inode1 [label=<users.txt>];
 inode1 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 1</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>167</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>1</td></tr>
@@ -89,16 +89,16 @@ block3 [label=<
 <tr><td align='left'>rupo,nuevo,abc<BR ALIGN='LEFT'/>0,G,temporal<BR ALIGN='LEFT'/>5,G,ultimo<BR ALIGN='LEFT'/></td></tr>
 </table>
 >];
-block0 -> inode2 [label="privada"];
+block0 -> inode2 [label=<privada>];
 inode2 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 2</b></td></tr>
 <tr><td>i_uid</td><td>2</td></tr>
 <tr><td>i_gid</td><td>2</td></tr>
 <tr><td>i_s</td><td>64</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>0</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>4</td></tr>
@@ -128,16 +128,16 @@ block4 [label=<
 <tr><td>b</td><td>4</td></tr>
 </table>
 >];
-block4 -> inode3 [label="a"];
+block4 -> inode3 [label=<a>];
 inode3 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 3</b></td></tr>
 <tr><td>i_uid</td><td>2</td></tr>
 <tr><td>i_gid</td><td>2</td></tr>
 <tr><td>i_s</td><td>19</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>000</td></tr>
 <tr><td>i_block[0]</td><td>5</td></tr>
@@ -164,16 +164,16 @@ block5 [label=<
 <tr><td align='left'>0123456789012345678</td></tr>
 </table>
 >];
-block4 -> inode4 [label="b"];
+block4 -> inode4 [label=<b>];
 inode4 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 4</b></td></tr>
 <tr><td>i_uid</td><td>3</td></tr>
 <tr><td>i_gid</td><td>2</td></tr>
 <tr><td>i_s</td><td>10</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>6</td></tr>
@@ -210,16 +210,16 @@ block8 [label=<
 <tr><td>directo</td><td>9</td></tr>
 </table>
 >];
-block8 -> inode5 [label="uno"];
+block8 -> inode5 [label=<uno>];
 inode5 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 5</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>64</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>0</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>7</td></tr>
@@ -249,16 +249,16 @@ block7 [label=<
 <tr><td></td><td>-1</td></tr>
 </table>
 >];
-block7 -> inode6 [label="dos"];
+block7 -> inode6 [label=<dos>];
 inode6 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 6</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>64</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>0</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>9</td></tr>
@@ -288,16 +288,16 @@ block9 [label=<
 <tr><td></td><td>-1</td></tr>
 </table>
 >];
-block8 -> inode7 [label="vacio"];
+block8 -> inode7 [label=<vacio>];
 inode7 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 7</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>0</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>-1</td></tr>
@@ -317,16 +317,16 @@ inode7 [label=<
 <tr><td>i_block[14]</td><td>-1</td></tr>
 </table>
 >];
-block8 -> inode8 [label="cont"];
+block8 -> inode8 [label=<cont>];
 inode8 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 8</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>3</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>10</td></tr>
@@ -353,16 +353,16 @@ block10 [label=<
 <tr><td align='left'>012</td></tr>
 </table>
 >];
-block8 -> inode9 [label="directo"];
+block8 -> inode9 [label=<directo>];
 inode9 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 9</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>768</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>11</td></tr>
@@ -476,16 +476,16 @@ block37 [label=<
 <tr><td></td><td>-1</td></tr>
 </table>
 >];
-block37 -> inode10 [label="simple"];
+block37 -> inode10 [label=<simple>];
 inode10 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 10</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>769</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>23</td></tr>
@@ -618,16 +618,16 @@ block35 [label=<
 <tr><td align='left'>8</td></tr>
 </table>
 >];
-block37 -> inode11 [label="doble"];
+block37 -> inode11 [label=<doble>];
 inode11 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 11</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>1793</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>38</td></tr>
@@ -916,16 +916,16 @@ block67 [label=<
 <tr><td align='left'>2</td></tr>
 </table>
 >];
-block37 -> inode12 [label="triple"];
+block37 -> inode12 [label=<triple>];
 inode12 [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>INODO 12</b></td></tr>
 <tr><td>i_uid</td><td>1</td></tr>
 <tr><td>i_gid</td><td>1</td></tr>
 <tr><td>i_s</td><td>20000</td></tr>
-<tr><td>i_atime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_ctime</td><td>11/09/2026 23:47:59</td></tr>
-<tr><td>i_mtime</td><td>11/09/2026 23:47:59</td></tr>
+<tr><td>i_atime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_ctime</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>i_mtime</td><td>08/10/2026 05:31:51</td></tr>
 <tr><td>i_type</td><td>1</td></tr>
 <tr><td>i_perm</td><td>664</td></tr>
 <tr><td>i_block[0]</td><td>70</td></tr>

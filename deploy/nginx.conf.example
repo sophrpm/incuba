@@ -1,9 +1,24 @@
-#fragmento de un server HTTPS; el certificado depende del dominio elegido
-location /api/ {
-    proxy_pass http://127.0.0.1:2611;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Real-IP $remote_addr;
-    client_max_body_size 1m;
-    proxy_read_timeout 180s;
+#archivo de sitio para /etc/nginx/sites-available/mia
+#el frontend exigido por el PDF se publica en S3; EC2 recibe la API
+server {
+    listen 80;
+    server_name _;
+
+    #copia local opcional de React para verificar el build en EC2
+    root /opt/mia/frontend/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        #sin barra final para conservar el prefijo /api/ que usa Crow
+        proxy_pass http://127.0.0.1:2611;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        client_max_body_size 1m;
+        proxy_read_timeout 180s;
+    }
 }

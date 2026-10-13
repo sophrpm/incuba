@@ -5,8 +5,8 @@ mbr [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td colspan='2'><b>MBR</b></td></tr>
 <tr><td>mbr_tamano</td><td>12582912</td></tr>
-<tr><td>mbr_fecha_creacion</td><td>11/09/2026 23:47:58</td></tr>
-<tr><td>mbr_dsk_signature</td><td>1755982637</td></tr>
+<tr><td>mbr_fecha_creacion</td><td>08/10/2026 05:31:51</td></tr>
+<tr><td>mbr_dsk_signature</td><td>971199226</td></tr>
 <tr><td>dsk_fit</td><td>F</td></tr>
 </table>
 >];

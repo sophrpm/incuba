@@ -138,3 +138,8 @@ output/
 
 # Enlace local a la base de datos de compilación.
 compile_commands.json
+#datos y caches locales
+data/
+__pycache__/
+*.pyc
+.env

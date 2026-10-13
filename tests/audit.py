@@ -10,12 +10,14 @@ import subprocess
 import tempfile
 import time
 import urllib.request
+import urllib.error
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = Path(tempfile.mkdtemp(prefix='mia-audit-'))
 PORT = int(os.environ.get('MIA_TEST_PORT', '2612'))
 URL = f'http://127.0.0.1:{PORT}'
 checks = []
+TOKEN = ""
 
 class Partition(c.Structure):
     _fields_ = [('status',c.c_char),('type',c.c_char),('fit',c.c_char),('start',c.c_int),('size',c.c_int),('name',c.c_char*16),('correlative',c.c_int),('id',c.c_char*4)]
@@ -43,9 +45,16 @@ def read(path, typ, offset=0):
 
 def api(command, success=None):
     data=json.dumps({'input':command}).encode()
-    req=urllib.request.Request(URL+'/api/analyze', data, {'Content-Type':'application/json'})
-    with urllib.request.urlopen(req,timeout=180) as response:
+    global TOKEN
+    if not TOKEN:
+        with urllib.request.urlopen(URL+'/api/session') as response: TOKEN=json.load(response)['token']
+    req=urllib.request.Request(URL+'/api/analyze', data, {'Content-Type':'application/json','X-MIA-Session':TOKEN})
+    try:
+        with urllib.request.urlopen(req,timeout=180) as response: result=json.load(response)
+    except urllib.error.HTTPError as response:
         result=json.load(response)
+    if command.startswith('fdisk ') and result.get('pendingConfirmation'):
+        return api('y',success)
     if success is not None:
         check(result['success'] is success, command[:110]+' -> '+str(result['messages'])[:180])
     return result
@@ -128,8 +137,8 @@ def main():
     ok(f'mount -path={disk} -name=primaria')
     bad(f'mount -path={BASE}/./main.mia -name=primaria')
     check('471A' in ok('mounted')['messages'][0],'mounted incluye id')
-    bad('mkfs -id=471A -fs=2fs')
     bad(f'rep -name=bm_inode -id=471A -path={BASE}/unformatted.txt')
+    ok('mkfs -id=471A -fs=2fs')
     ok('mkfs -id=471A')
     start=read(disk,MBR).partitions[0].start
     sb=integrity(disk,start)
@@ -212,7 +221,7 @@ def main():
         ext='txt' if name in ['file','bm_inode','bm_block'] else 'svg'
         suffix=' -path_file_ls=/triple' if name=='file' else (' -path_file_ls=/' if name=='ls' else '')
         result=ok(f'rep -name={name} -path={reportdir}/{name}.{ext} -id=471A'+suffix)
-        with urllib.request.urlopen(URL+result['reports'][0]['url']) as response:
+        with urllib.request.urlopen(urllib.request.Request(URL+result['reports'][0]['url'],headers={'X-MIA-Session':TOKEN})) as response:
             check(response.read()==(reportdir/f'{name}.{ext}').read_bytes(),'reporte accesible API '+name)
         if name in ['inode','block','tree','disk','mbr']:
             ok(f'rep -name={name} -path={reportdir}/{name}.dot -id=471A')
@@ -294,7 +303,7 @@ def main():
 
 if __name__=='__main__':
     log=(BASE/'server.log').open('w')
-    server=subprocess.Popen([str(ROOT/'backend/build/202405047_ext2_backend')],env={**os.environ,'MIA_PORT':str(PORT)},stdout=log,stderr=log)
+    server=subprocess.Popen([str(ROOT/'backend/build/202405047_ext2_backend')],env={**os.environ,'MIA_PORT':str(PORT),'MIA_DISK_DIR':str(BASE),'MIA_REPORT_DIR':str(BASE),'MIA_INPUT_DIR':str(BASE)},stdout=log,stderr=log)
     status='failed'
     try:
         for attempt in range(60):

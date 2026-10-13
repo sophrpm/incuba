@@ -1,0 +1,7 @@
+# Ejecutar despues de 08_proyecto2.smia
+loss -id=471A
+journaling -id=471A
+rep -name=bm_inode -id=471A -path=proyecto2-bitmap-despues.txt
+rep -name=bm_block -id=471A -path=proyecto2-bloques-despues.txt
+# LOSS invalida login. Consulte el journal y reportes en React.
+# Un formato posterior reinicia datos y bitacora.

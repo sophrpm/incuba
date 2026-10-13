@@ -1,0 +1,24 @@
+# Use un directorio de datos nuevo. El primer montaje usa 471A por el carnet actual.
+mkdisk -size=12 -path=proyecto2.mia
+fdisk -size=8 -unit=M -path=proyecto2.mia -name=principal
+mount -path=proyecto2.mia -name=principal
+mkfs -id=471A -fs=3fs
+login -user=root -pass=123 -id=471A
+mkgrp -name=estudiantes
+mkusr -user=ana -pass=abc -grp=estudiantes
+mkdir -p -path=/home/docs
+mkdir -path=/destino
+mkfile -path=/home/docs/a.txt -size=20000
+cat -file1=/home/docs/a.txt
+rename -path=/home/docs/a.txt -name=b.txt
+copy -path=/home/docs -destino=/destino
+rename -path=/destino/docs -name=copia
+move -path=/destino/copia -destino=/home
+find -path=/ -name=*.txt
+remove -path=/home/copia
+journaling -id=471A
+rep -name=tree -id=471A -path=proyecto2-tree.svg
+rep -name=sb -id=471A -path=proyecto2-sb.svg
+rep -name=bm_inode -id=471A -path=proyecto2-bitmap-antes.txt
+# Se conserva la sesion para explorar desde React.
+# LOSS se demuestra por separado porque destruye las areas de datos.

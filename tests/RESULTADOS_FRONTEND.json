@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checks": [
+    "script smia, comentarios y terminal",
+    "login incorrecto muestra error",
+    "discos, particiones, carpetas y lectura",
+    "confirmación web de sobrescritura",
+    "journal visible con tres operaciones",
+    "reporte Graphviz real en iframe",
+    "dos navegadores con sesiones independientes",
+    "logout limpia contenido y sesión",
+    "journal consultable en React después de LOSS",
+    "bitmap posterior a LOSS visible",
+    "vista móvil sin desbordamiento",
+    "sin errores JavaScript"
+  ],
+  "base": "/tmp/mia-browser-4noHzn"
+}
